@@ -7,7 +7,7 @@ public class UserInput : MonoBehaviour
     public static UserInput instance;
     public Vector2 MoveInput { get; private set; }
     public bool ShootJustPressed { get; private set; }
-
+    public bool ShootIsHeld { get; private set; }
     private PlayerInput _playerInput;
     private InputAction shootAction;
     private InputAction moveAction;
@@ -27,12 +27,14 @@ public class UserInput : MonoBehaviour
     {
         shootAction = _playerInput.actions["Shoot"];
         moveAction = _playerInput.actions["Move"];
+
     }
 
     private void UpdateInputs()
     {
         MoveInput = moveAction.ReadValue<Vector2>().normalized;
         ShootJustPressed = shootAction.WasPressedThisFrame();
+        ShootIsHeld = shootAction.IsPressed();
     }
 
     void Update()

@@ -139,7 +139,7 @@
                     "name": "",
                     "id": "cc7e7f6e-400d-4f1e-b46b-c149681a022e",
                     "path": "<Keyboard>/space",
-                    "interactions": "",
+                    "interactions": "Hold",
                     "processors": "",
                     "groups": "",
                     "action": "Shoot",

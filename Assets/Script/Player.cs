@@ -3,13 +3,14 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private Rigidbody2D rb;
-    [SerializeField] private float movespeed;
     [SerializeField] private GameObject bulletPrefab;
+    [SerializeField] private float movespeed = 5;
+    [SerializeField] private float firerate = 0.2f;
+    [SerializeField] private ObjectPool bulletPool;
     private Vector2 currentMoveInput;
-
+    private float shootTimer = 0f;
     void Awake()
     {
-        movespeed = 5;
         rb = GetComponent<Rigidbody2D>();
         Application.targetFrameRate = 60;
         QualitySettings.vSyncCount = 1;
@@ -19,9 +20,21 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         currentMoveInput = UserInput.instance.MoveInput;
+
         if (UserInput.instance.ShootJustPressed)
         {
             Shoot();
+            shootTimer = firerate;
+        }
+
+        if (UserInput.instance.ShootIsHeld)
+        {
+            shootTimer -= Time.deltaTime;
+            if (shootTimer <= 0)
+            {
+                Shoot();
+                shootTimer = firerate;
+            }
         }
     }
 
@@ -33,8 +46,8 @@ public class PlayerMovement : MonoBehaviour
     private void Shoot()
     {
         var spawnPos = this.transform.position + transform.up * 0.5f;
-        var bullet = Instantiate(bulletPrefab, spawnPos, Quaternion.identity);
-        Bullet script = bullet.GetComponent<Bullet>();
-        script.Travel();
+        GameObject bullet = bulletPool.GetFromPool();
+        bullet.transform.position = spawnPos;
+        bullet.GetComponent<Bullet>().Initiate(bulletPool);
     }
 }
