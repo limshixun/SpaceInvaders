@@ -1,42 +1,33 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class Bullet : MonoBehaviour
+public class EnemyBullet : MonoBehaviour
 {
     [SerializeField] private float force = 10f;
     [SerializeField] private float damage = 1f;
     [SerializeField] private Rigidbody2D rb;
-    private ObjectPool bulletPool;
-
     void Awake()
     {
         if (rb == null) rb = GetComponent<Rigidbody2D>();
     }
 
-    public void Initiate(ObjectPool poolRef)
+    public void Initiate()
     {
         // So that it can return to the poolref
-        bulletPool = poolRef;
-        rb.linearVelocity = transform.up * force;
+        rb.linearVelocity = -transform.up * force;
     }
 
     private void OnTriggerEnter2D(Collider2D other) {
-        if (other.CompareTag("Enemy"))
+        if (other.CompareTag("Player"))
         {
-            other.gameObject.GetComponent<Enemy>().TakeDamage(damage);
+            other.gameObject.GetComponent<Player>().TakeDamage(damage);
             Debug.Log(other + " Take Damage = " + damage);
-            ReturnToPool();
+            OnBecameInvisible();
         }
     }
 
     void OnBecameInvisible()
     {
-        ReturnToPool();
-    }
-
-    void ReturnToPool()
-    {
-        rb.linearVelocity = Vector2.zero;
-        bulletPool.ReturnToPool(gameObject);
+        Destroy(gameObject);
     }
 }

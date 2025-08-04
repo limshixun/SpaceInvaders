@@ -1,20 +1,30 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+public class Player : MonoBehaviour
 {
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private GameObject bulletPrefab;
-    [SerializeField] private float movespeed = 5;
-    [SerializeField] private float firerate = 0.2f;
     [SerializeField] private ObjectPool bulletPool;
+    private float _health;
     private Vector2 currentMoveInput;
-    private float shootTimer = 0f;
+    private float shootTimer;
+    public float movespeed;
+    public float firerate;
+    public float acceleration;
+    public float maxSpeed;
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         Application.targetFrameRate = 60;
         QualitySettings.vSyncCount = 1;
-        rb.interpolation = RigidbodyInterpolation2D.Interpolate;
+        // rb.interpolation = RigidbodyInterpolation2D.Interpolate;wa
+        shootTimer = 0f;
+        movespeed = 5;
+        firerate = 0.2f;
+        acceleration = 20f;
+        maxSpeed = 20f;
+        _health = 3;
     }
 
     void Update()
@@ -41,6 +51,33 @@ public class PlayerMovement : MonoBehaviour
     void FixedUpdate()
     {
         rb.MovePosition(rb.position + currentMoveInput * movespeed * Time.fixedDeltaTime);
+        // if (currentMoveInput != Vector2.zero)
+        // {
+        //     rb.AddForce(currentMoveInput * acceleration, ForceMode2D.Force);
+        //     if (rb.linearVelocity.magnitude > maxSpeed)
+        //     {
+        //         rb.linearVelocity = rb.linearVelocity.normalized * maxSpeed;
+        //     }
+        // }
+        // else if (currentMoveInput == Vector2.zero)
+        // {
+        //     // Debug.Log("no movement input");
+        //     rb.AddForce(rb.linearVelocity * -acceleration*2, ForceMode2D.Force);
+        // }
+    }
+
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Enemy"))
+        {
+            TakeDamage(1);
+        }
+    }
+
+    public void TakeDamage(float damage)
+    {
+        _health -= 1;
+        Debug.Log(_health);
     }
 
     private void Shoot()
