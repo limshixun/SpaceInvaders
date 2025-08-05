@@ -7,25 +7,30 @@ public class Player : MonoBehaviour
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private ObjectPool bulletPool;
-    private float _health;
+    [SerializeField] private Animator animator;
+    [SerializeField] private Health _health;
     private Vector2 currentMoveInput;
     private float shootTimer;
     public float movespeed;
     public float firerate;
     public float acceleration;
     public float maxSpeed;
+    public Vector2 InitialPos;
+
     void Awake()
     {
+        _health = GetComponent<Health>();
         rb = GetComponent<Rigidbody2D>();
+
+        InitialPos = transform.position;
         Application.targetFrameRate = 60;
         QualitySettings.vSyncCount = 1;
-        // rb.interpolation = RigidbodyInterpolation2D.Interpolate;wa
         shootTimer = 0f;
         movespeed = 5;
         firerate = 0.2f;
         acceleration = 20f;
         maxSpeed = 20f;
-        _health = 3;
+        if (animator == null) animator = GetComponent<Animator>();
     }
 
     void Update()
@@ -77,7 +82,9 @@ public class Player : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
-        _health -= 1;
+        _health.dmgHealth(damage);
+        animator.SetBool("Explosion", true);
+        UserInput.instance.OnDisable();
     }
 
     private void Shoot()
@@ -91,4 +98,17 @@ public class Player : MonoBehaviour
         }
 
     }
+
+    void Reset()
+    {
+        animator.SetBool("Explosion", false);
+        transform.position = InitialPos;
+        UserInput.instance.OnEnable();
+    }
+
+    public void onExplosionEnd()
+    {
+        Reset();
+    }
+
 }

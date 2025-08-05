@@ -21,6 +21,7 @@ public class UserInput : MonoBehaviour
         _playerInput = GetComponent<PlayerInput>();
 
         SetUpInputAction();
+        OnEnable();
     }
 
     public void SetUpInputAction()
@@ -40,6 +41,18 @@ public class UserInput : MonoBehaviour
     void Update()
     {
         UpdateInputs();
+    }
+
+    public void OnDisable()
+    {
+        shootAction?.Disable();
+        moveAction?.Disable();
+    }
+
+    public void OnEnable()
+    {
+        shootAction?.Enable();
+        moveAction?.Enable();
     }
 
 }

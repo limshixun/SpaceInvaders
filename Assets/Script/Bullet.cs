@@ -13,7 +13,7 @@ public class Bullet : MonoBehaviour
     void Awake()
     {
         if (rb == null) rb = GetComponent<Rigidbody2D>();
-        cam = Camera.main;
+        if (cam == null) cam = Camera.main;
     }
 
     public void Initiate(ObjectPool poolRef)
@@ -47,15 +47,4 @@ public class Bullet : MonoBehaviour
             ReturnToPool();
         }
     }
-
-    // IEnumerator AutoReturn()
-    // {
-    //     yield return new WaitForSeconds(3f);
-    //     bulletPool.ReturnToPool(gameObject);
-    // }
-
-    // void OnEnable()
-    // {
-    //     StartCoroutine(AutoReturn());
-    // }
 }
