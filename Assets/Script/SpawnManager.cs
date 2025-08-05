@@ -18,6 +18,7 @@ public class SpawnManager : MonoBehaviour
     private float movespeed = 0.5f;
     private float moveAmount = 0.25f;
     private float direction;
+    private float previousChildCount;
     void Awake()
     {
         moveTimer = movespeed;
@@ -34,7 +35,6 @@ public class SpawnManager : MonoBehaviour
 
         var maxX = Mathf.Round(_gridArea.bounds.max.x);
         var maxY = Mathf.Round(_gridArea.bounds.max.y);
-        Debug.Log(maxX + " " + maxY);
 
         var enemyPrefab = enemy1Prefab;
         for (int i = 0; i < _rows; i++)
@@ -58,6 +58,7 @@ public class SpawnManager : MonoBehaviour
     void Start()
     {
         cam = Camera.main;
+        previousChildCount = transform.childCount;
     }
 
     void Update()
@@ -71,6 +72,11 @@ public class SpawnManager : MonoBehaviour
         {
             MoveHorde();
             moveTimer = movespeed;
+        }
+        if (transform.childCount < previousChildCount)
+        {
+            movespeed -= 0.015f;
+            previousChildCount = transform.childCount;
         }
     }
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public class EnemyBullet : MonoBehaviour
 {
-    [SerializeField] private float force = 10f;
+    [SerializeField] private float force;
     [SerializeField] private float damage = 1f;
     [SerializeField] private Rigidbody2D rb;
     void Awake()
@@ -13,6 +13,7 @@ public class EnemyBullet : MonoBehaviour
 
     public void Initiate()
     {
+        force = Random.Range(4, 10);
         // So that it can return to the poolref
         rb.linearVelocity = -transform.up * force;
     }
@@ -21,7 +22,6 @@ public class EnemyBullet : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             other.gameObject.GetComponent<Player>().TakeDamage(damage);
-            Debug.Log(other + " Take Damage = " + damage);
             OnBecameInvisible();
         }
     }

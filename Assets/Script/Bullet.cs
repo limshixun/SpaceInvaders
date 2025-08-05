@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
 
 public class Bullet : MonoBehaviour
 {
@@ -7,10 +8,12 @@ public class Bullet : MonoBehaviour
     [SerializeField] private float damage = 1f;
     [SerializeField] private Rigidbody2D rb;
     private ObjectPool bulletPool;
+    private Camera cam;
 
     void Awake()
     {
         if (rb == null) rb = GetComponent<Rigidbody2D>();
+        cam = Camera.main;
     }
 
     public void Initiate(ObjectPool poolRef)
@@ -20,23 +23,39 @@ public class Bullet : MonoBehaviour
         rb.linearVelocity = transform.up * force;
     }
 
-    private void OnTriggerEnter2D(Collider2D other) {
+    private void OnTriggerEnter2D(Collider2D other)
+    {
         if (other.CompareTag("Enemy"))
         {
             other.gameObject.GetComponent<Enemy>().TakeDamage(damage);
-            Debug.Log(other + " Take Damage = " + damage);
             ReturnToPool();
+            Debug.Log("triggered " + other);
         }
-    }
-
-    void OnBecameInvisible()
-    {
-        ReturnToPool();
     }
 
     void ReturnToPool()
     {
         rb.linearVelocity = Vector2.zero;
+        Debug.Log("asd");
         bulletPool.ReturnToPool(gameObject);
     }
+
+    void Update()
+    {
+        if (cam.WorldToViewportPoint(transform.position).y > 1)
+        {
+            ReturnToPool();
+        }
+    }
+
+    // IEnumerator AutoReturn()
+    // {
+    //     yield return new WaitForSeconds(3f);
+    //     bulletPool.ReturnToPool(gameObject);
+    // }
+
+    // void OnEnable()
+    // {
+    //     StartCoroutine(AutoReturn());
+    // }
 }

@@ -12,7 +12,7 @@ public class EnemyShooter : MonoBehaviour
 
     private void resetTimer()
     {
-        shootTimer = Random.Range(3, 5);
+        shootTimer = Random.Range(1, 15);
     }
 
     void Update()

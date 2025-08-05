@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -77,14 +78,17 @@ public class Player : MonoBehaviour
     public void TakeDamage(float damage)
     {
         _health -= 1;
-        Debug.Log(_health);
     }
 
     private void Shoot()
     {
         var spawnPos = this.transform.position + transform.up * 0.5f;
         GameObject bullet = bulletPool.GetFromPool();
-        bullet.transform.position = spawnPos;
-        bullet.GetComponent<Bullet>().Initiate(bulletPool);
+        if (bullet)
+        {
+            bullet.transform.position = spawnPos;
+            bullet.GetComponent<Bullet>().Initiate(bulletPool);
+        }
+
     }
 }
