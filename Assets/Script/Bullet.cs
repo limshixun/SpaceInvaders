@@ -4,7 +4,7 @@ using System.Collections;
 
 public class Bullet : MonoBehaviour
 {
-    [SerializeField] private float force = 10f;
+    [SerializeField] private float force = 5f;
     [SerializeField] private float damage = 1f;
     [SerializeField] private Rigidbody2D rb;
     private ObjectPool bulletPool;
@@ -36,7 +36,6 @@ public class Bullet : MonoBehaviour
     void ReturnToPool()
     {
         rb.linearVelocity = Vector2.zero;
-        Debug.Log("asd");
         bulletPool.ReturnToPool(gameObject);
     }
 

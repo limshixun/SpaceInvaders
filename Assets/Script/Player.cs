@@ -9,18 +9,20 @@ public class Player : MonoBehaviour
     [SerializeField] private ObjectPool bulletPool;
     [SerializeField] private Animator animator;
     [SerializeField] private Health _health;
+    [SerializeField] private AudioSource explosionAudio;
     private Vector2 currentMoveInput;
     private float shootTimer;
     public float movespeed;
     public float firerate;
-    public float acceleration;
-    public float maxSpeed;
     public Vector2 InitialPos;
+    public float dmgTimer;
 
     void Awake()
     {
-        _health = GetComponent<Health>();
-        rb = GetComponent<Rigidbody2D>();
+        if (_health == null) _health = GetComponent<Health>();
+        if (rb == null) rb = GetComponent<Rigidbody2D>();
+        if (explosionAudio == null) explosionAudio = GetComponent<AudioSource>();
+        if (animator == null) animator = GetComponent<Animator>();
 
         InitialPos = transform.position;
         Application.targetFrameRate = 60;
@@ -28,9 +30,8 @@ public class Player : MonoBehaviour
         shootTimer = 0f;
         movespeed = 5;
         firerate = 0.2f;
-        acceleration = 20f;
-        maxSpeed = 20f;
-        if (animator == null) animator = GetComponent<Animator>();
+        dmgTimer = 3f;
+
     }
 
     void Update()
@@ -52,63 +53,49 @@ public class Player : MonoBehaviour
                 shootTimer = firerate;
             }
         }
+        dmgTimer = Mathf.Max(0, dmgTimer - Time.deltaTime);
     }
 
     void FixedUpdate()
     {
         rb.MovePosition(rb.position + currentMoveInput * movespeed * Time.fixedDeltaTime);
-        // if (currentMoveInput != Vector2.zero)
-        // {
-        //     rb.AddForce(currentMoveInput * acceleration, ForceMode2D.Force);
-        //     if (rb.linearVelocity.magnitude > maxSpeed)
-        //     {
-        //         rb.linearVelocity = rb.linearVelocity.normalized * maxSpeed;
-        //     }
-        // }
-        // else if (currentMoveInput == Vector2.zero)
-        // {
-        //     // Debug.Log("no movement input");
-        //     rb.AddForce(rb.linearVelocity * -acceleration*2, ForceMode2D.Force);
-        // }
     }
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Enemy"))
+        if (collision.CompareTag("Enemy") && dmgTimer <= 0)
         {
-            TakeDamage(1);
+            animator.SetBool("Explosion", true);
+            UserInput.instance.OnDisable();
+            explosionAudio.Play();
+            dmgTimer = 3;
         }
-    }
-
-    public void TakeDamage(float damage)
-    {
-        _health.dmgHealth(damage);
-        animator.SetBool("Explosion", true);
-        UserInput.instance.OnDisable();
     }
 
     private void Shoot()
     {
         var spawnPos = this.transform.position + transform.up * 0.5f;
-        GameObject bullet = bulletPool.GetFromPool();
+        GameObject bullet = bulletPool.GetFromPool(true);
         if (bullet)
         {
             bullet.transform.position = spawnPos;
             bullet.GetComponent<Bullet>().Initiate(bulletPool);
         }
-
     }
 
-    void Reset()
+    public void Reset()
     {
         animator.SetBool("Explosion", false);
         transform.position = InitialPos;
         UserInput.instance.OnEnable();
+        dmgTimer = 3f;
     }
 
     public void onExplosionEnd()
     {
+        _health.dmgHealth(1);
         Reset();
     }
+
 
 }

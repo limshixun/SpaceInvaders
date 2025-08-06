@@ -32,9 +32,11 @@ public class SpawnManager : MonoBehaviour
         {
             _gridArea = GetComponent<BoxCollider2D>();
         }
+    }
 
-        var maxX = Mathf.Round(_gridArea.bounds.max.x);
-        var maxY = Mathf.Round(_gridArea.bounds.max.y);
+    public void ResetStage()
+    {
+        ClearEnemies();
 
         var enemyPrefab = enemy1Prefab;
         for (int i = 0; i < _rows; i++)
@@ -42,23 +44,25 @@ public class SpawnManager : MonoBehaviour
             for (int j = 0; j < _columns; j++)
             {
                 if (j == 0)
-            {
-                enemyPrefab = enemy2Prefab;
-            }
-            else
-            {
-                enemyPrefab = enemy1Prefab;
-            }
+                {
+                    enemyPrefab = enemy2Prefab;
+                }
+                else
+                {
+                    enemyPrefab = enemy1Prefab;
+                }
                 var spawnPos = startPos + new Vector2(i * spacing, -j * spacing);
                 Instantiate(enemyPrefab, spawnPos, Quaternion.identity, transform);
             }
         }
+        previousChildCount = transform.childCount;
+        movespeed = 0.5f;
     }
 
     void Start()
     {
         cam = Camera.main;
-        previousChildCount = transform.childCount;
+
     }
 
     void Update()
@@ -102,5 +106,13 @@ public class SpawnManager : MonoBehaviour
             if (direction < 0 && viewportPos.x <= 0.05f) return true;
         }
         return false;
+    }
+
+    public void ClearEnemies()
+    {
+        foreach (Transform child in transform)
+        {
+            Destroy(child.gameObject);
+        }
     }
 }

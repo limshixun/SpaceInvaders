@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class EnemyShooter : MonoBehaviour
 {
@@ -8,6 +9,10 @@ public class EnemyShooter : MonoBehaviour
     void Awake()
     {
         resetTimer();
+    }
+    void Start()
+    {
+        
     }
 
     private void resetTimer()
@@ -27,7 +32,8 @@ public class EnemyShooter : MonoBehaviour
 
     void Shoot()
     {
-        var bullet = Instantiate(bulletPrefab, this.transform.position, Quaternion.identity);
-        bullet.GetComponent<EnemyBullet>().Initiate();
+        GameObject bullet = ObjectPool.instance.GetFromPool(false);
+        bullet.GetComponent<EnemyBullet>().Initiate(ObjectPool.instance);
+        bullet.transform.position = this.transform.position;
     }
 }
